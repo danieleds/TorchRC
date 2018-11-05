@@ -53,7 +53,7 @@ class ESN(torch.nn.Module):
         
         Returns: a tensor of shape (seq_len, reservoir_size)
         """
-        x = torch.zeros((input.size(0), self.reservoir_size), device=self._curr_device())
+        x = torch.zeros((input.size(0), self.reservoir_size), device=self.W_hat.device)
 
         if initial_state is not None:
             x[0,:] = self.f( self.W_in @ input[0,:] + self.W_hat @ initial_state )
@@ -68,6 +68,3 @@ class ESN(torch.nn.Module):
     def _rescale_contractivity(self, W):
         coeff = self.contractivity_coeff
         return W * coeff / (W.eig()[0].abs().max())
-
-    def _curr_device(self):
-        return next(self.parameters()).device
