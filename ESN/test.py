@@ -1,6 +1,5 @@
 import torch
 import math
-import random
 from esn import ESN
 
 dataset = torch.Tensor( [ math.sin(x*0.5) + 2 * round(math.cos(x*0.5)) for x in range(2000) ] )
