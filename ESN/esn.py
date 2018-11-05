@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 def to_sparse(tensor, density):
     return tensor * (torch.rand_like(tensor) <= density).type(tensor.dtype)
