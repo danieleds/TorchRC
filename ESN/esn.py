@@ -31,7 +31,7 @@ class ESN(torch.nn.Module):
         self.f = f
 
         self.W_in = random_matrix((reservoir_size, input_size)) * 2 - 1
-        self.W_hat = random_matrix((reservoir_size, reservoir_size))
+        self.W_hat = random_matrix((reservoir_size, reservoir_size)) * 2 - 1
         self.W_hat = to_sparse(self.W_hat, density)
 
         self.W_in = scale_in * self.W_in
