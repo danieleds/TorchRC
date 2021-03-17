@@ -16,7 +16,7 @@ train_ds = TensorDataset(ds_x[:600], ds_y[:600])
 val_ds = TensorDataset(ds_x[600:], ds_y[600:])
 
 # Define the model
-esn = torch_rc.nn.esn.LeakyESN(1, 64, scale_rec=0.99)
+esn = torch_rc.nn.LeakyESN(1, 64, scale_rec=0.99)
 readout = torch_rc.nn.Linear(64, 2)
 
 # Train the model (here we do it in minibatches)
