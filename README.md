@@ -1,7 +1,25 @@
-# PyTorch implementation of Reservoir Computing models
+# TorchRC
+[![PyPI version fury.io](https://badge.fury.io/py/torch-rc.svg)](https://pypi.python.org/pypi/torch-rc/)
 
-## ESN
+An organized collection of Reservoir Computing models and techniques that is well-integrated within the PyTorch API.
 
-Implementation of a basic Echo State Network without output feedback connections.
+> **WARNING**: Work in progress!
 
- - LUKOŠEVIČIUS, Mantas; JAEGER, Herbert. Reservoir computing approaches to recurrent neural network training. Computer Science Review, 2009, 3.3: 127-149.
+### Models
+
+At the moment, the library contains an implementation of:
+
+ * Leaky Echo State Network
+ * Leaky Echo State Network with Ring or Multiring Reservoir
+
+More models are coming.
+
+### Optimizers
+
+TorchRC allows to train the reservoir models either in closed form or with the standard PyTorch optimizers.
+Exact incremental closed form techniques are supported in order to support those scenarios in which it is not feasible to hold all the network states in memory.
+Training on the GPU is also supported.
+
+## How to install
+
+    pip3 install torch-rc
