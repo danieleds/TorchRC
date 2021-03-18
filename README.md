@@ -1,5 +1,5 @@
 # TorchRC
-[![PyPI version fury.io](https://badge.fury.io/py/torch-rc.svg)](https://pypi.python.org/pypi/torch-rc/)
+[![PyPI version fury.io](https://badge.fury.io/py/torch-rc.svg)](https://pypi.python.org/pypi/torch-rc/) [![Python package](https://github.com/danieleds/TorchRC/actions/workflows/python-package.yml/badge.svg)](https://github.com/danieleds/TorchRC/actions/workflows/python-package.yml)
 
 An organized collection of Reservoir Computing models and techniques that is well-integrated within the PyTorch API.
 
