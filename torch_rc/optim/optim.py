@@ -63,7 +63,7 @@ class RidgeIncrementalClassifier:
         self.mat_a = mat_a
         self.mat_b = mat_b
 
-    def fit_end(self):
+    def fit_apply(self):
         w, b = _incremental_ridge_classifier_end(self.mat_a, self.mat_b)
         self._apply_weights(w, b)
 

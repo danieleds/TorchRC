@@ -25,7 +25,7 @@ optimizer = torch_rc.optim.RidgeIncrementalClassifier(readout)
 for x, y in train_dl:
     h, _ = esn(x.transpose(1, 0))
     optimizer.fit_step(h[-1], y)
-optimizer.fit_end()
+optimizer.fit_apply()
 
 # Validate the model (here we do it example by example)
 n_correct = 0
