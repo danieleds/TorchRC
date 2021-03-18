@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional
 from torch_rc.nn.readout import Linear
 
 

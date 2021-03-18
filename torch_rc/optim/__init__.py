@@ -1,3 +1,3 @@
-from torch_rc.optim.optim import RidgeClassifier, RidgeIncrementalClassifier
+from .ridge import RidgeClassifier, RidgeIncrementalClassifier
 
 __all__ = ['RidgeClassifier', 'RidgeIncrementalClassifier']
