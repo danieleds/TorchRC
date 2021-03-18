@@ -27,7 +27,6 @@ class TestGRU(unittest.TestCase):
         self.assertTrue(layer(torch.FloatTensor([[1, 1, 1, 1]])).argmax(-1) == 0)
         self.assertTrue(layer(torch.FloatTensor([[0, 0, 0, 0]])).argmax(-1) == 1)
 
-
     def test_ridge_incremental_classification(self):
         x = torch.as_tensor([
             [0, 0, 0, 0],

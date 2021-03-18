@@ -160,4 +160,3 @@ class RidgeIncrementalRegression(_RidgeIncrementalBase):
 
     def __init__(self, readout: Linear, l2_reg: float = 0):
         super().__init__(readout, l2_reg, False)
-
