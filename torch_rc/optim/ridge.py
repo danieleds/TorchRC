@@ -12,7 +12,7 @@ def _incremental_ridge_init(input_size: int, output_size: int, device: torch.dev
 
 
 @torch.jit.script
-def _incremental_ridge_classifier_step(input, expected, l2_reg: float, mat_a, mat_b, ide, classification: bool):
+def _incremental_ridge_classifier_step(input, expected, mat_a, mat_b, classification: bool):
     # Add bias
     s = torch.cat([input, torch.ones(input.shape[0], 1, device=input.device, dtype=input.dtype)], dim=1)
 
@@ -25,13 +25,13 @@ def _incremental_ridge_classifier_step(input, expected, l2_reg: float, mat_a, ma
     # s: (nb, nr+1)
     # y: (nb, ny)
     mat_a = mat_a + torch.einsum('br,by->yr', s, y)
-    mat_b = mat_b + torch.einsum('br,bz->rz', s, s) + l2_reg * ide
+    mat_b = mat_b + torch.einsum('br,bz->rz', s, s)
     return mat_a, mat_b
 
 
 @torch.jit.script
-def _incremental_ridge_end(mat_a, mat_b):
-    weights = mat_a @ torch.inverse(mat_b)  # (ny, nr+1)
+def _incremental_ridge_end(mat_a, mat_b, l2_reg: float, ide):
+    weights = torch.solve(mat_a.t(), mat_b + l2_reg * ide)[0].t()  # (ny, nr+1)
     w, b = weights[:, :-1], weights[:, -1]
     return w, b
 
@@ -67,9 +67,9 @@ def _direct_ridge(input_size: int, output_size: int, input, expected, l2_reg: fl
     # s: (nb, nr+1)
     # y: (nb, ny)
     mat_a = torch.einsum('br,by->yr', s, y)
-    mat_b = torch.einsum('br,bz->rz', s, s) + l2_reg * ide
+    mat_b = torch.einsum('br,bz->rz', s, s)
 
-    weights = mat_a @ torch.inverse(mat_b)  # (ny, nr+1)
+    weights = torch.solve(mat_a.t(), mat_b + l2_reg * ide)[0].t()  # (ny, nr+1)
     w, b = weights[:, :-1], weights[:, -1]
     return w, b
 
@@ -123,13 +123,13 @@ class _RidgeIncrementalBase:
 
         """
 
-        mat_a, mat_b = _incremental_ridge_classifier_step(states, expected, self._l2_reg, self._mat_a, self._mat_b,
-                                                          self._ide, self._classification)
+        mat_a, mat_b = _incremental_ridge_classifier_step(states, expected, self._mat_a, self._mat_b,
+                                                          self._classification)
         self._mat_a = mat_a
         self._mat_b = mat_b
 
     def fit_apply(self):
-        w, b = _incremental_ridge_end(self._mat_a, self._mat_b)
+        w, b = _incremental_ridge_end(self._mat_a, self._mat_b, self._l2_reg, self._ide)
         self._apply_weights(w, b)
 
     def _apply_weights(self, w, b):
