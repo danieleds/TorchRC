@@ -1,5 +1,5 @@
 absl-py==0.11.0
-aiohttp==3.7.3
+aiohttp==3.7.4
 appnope @ file:///opt/concourse/worker/volumes/live/5f13e5b3-5355-4541-5fc3-f08850c73cf9/volume/appnope_1606859448618/work
 argon2-cffi @ file:///opt/concourse/worker/volumes/live/d733ceb5-7f19-407b-7da7-a386540ab855/volume/argon2-cffi_1613037492998/work
 async-generator @ file:///home/ktietz/src/ci/async_generator_1611927993394/work
