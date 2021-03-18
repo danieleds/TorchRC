@@ -1,3 +1,3 @@
-from .ridge import RidgeClassifier, RidgeIncrementalClassifier
+from .ridge import RidgeClassification, RidgeIncrementalClassification, RidgeRegression, RidgeIncrementalRegression
 
-__all__ = ['RidgeClassifier', 'RidgeIncrementalClassifier']
+__all__ = ['RidgeClassification', 'RidgeIncrementalClassification', 'RidgeRegression', 'RidgeIncrementalRegression']
