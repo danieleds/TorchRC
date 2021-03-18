@@ -5,6 +5,14 @@ An organized collection of Reservoir Computing models and techniques that is wel
 
 > **WARNING**: Work in progress!
 
+* [What's inside](#whats-inside)
+  * [Models](#models)
+  * [Optimizers](#optimizers)
+* [Installation](#installation)
+* [Example](#example)
+
+## What's inside
+
 ### Models
 
 At the moment, the library contains an implementation of:
@@ -20,6 +28,10 @@ TorchRC allows to train the reservoir models either in closed form or with the s
 Exact incremental closed form techniques are supported in order to support those scenarios in which it is not feasible to hold all the network states in memory.
 Training on the GPU is also supported.
 
-## How to install
+## Installation
 
     pip3 install torch-rc
+
+## Example
+
+You can find example scripts in the [examples/](examples/) folder. 
