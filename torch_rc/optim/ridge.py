@@ -110,9 +110,6 @@ class _RidgeIncrementalBase:
         device = self._readout.weight.device
 
         mat_a, mat_b, ide = _incremental_ridge_init(self._state_size, self._output_size, device)
-        self._mat_a = mat_a.to(device)
-        self._mat_b = mat_b.to(device)
-        self._ide = ide.to(device)
 
     def fit_step(self, states, expected):
         """
