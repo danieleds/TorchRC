@@ -17,8 +17,8 @@ An organized collection of Reservoir Computing models and techniques that is wel
 
 At the moment, the library contains an implementation of:
 
- * Leaky Echo State Network (`torch_rc.nn.LeakyESN`)
- * Leaky Echo State Network with Ring or Multiring Reservoir (`torch_rc.nn.MultiringESN`)
+ * **Leaky Echo State Network** (`torch_rc.nn.LeakyESN`)
+ * **Leaky Echo State Network with Ring or Multiring Reservoir** (`torch_rc.nn.MultiringESN`)
 
 More models are coming.
 
@@ -27,6 +27,12 @@ More models are coming.
 TorchRC allows to train the reservoir models either in closed form or with the standard PyTorch optimizers.
 Exact incremental closed form techniques are supported in order to support those scenarios in which it is not feasible to hold all the network states in memory.
 Training on the GPU is also supported.
+
+Currently supported optimizers:
+
+ * **Ridge Classifier** (`torch_rc.optim.RidgeClassifier`): for trainin a readout in closed-form. 
+ * **Ridge Incremental Classifier** (`torch_rc.optim.RidgeIncrementalClassifier`): for training a readout in closed-form,
+   passing data in multiple separate calls (e.g., for when your collection of states do not fit in memory).
 
 ## Installation
 
