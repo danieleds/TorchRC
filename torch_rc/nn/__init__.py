@@ -1,2 +1,4 @@
-from torch_rc.nn.esn import ESNBase, LeakyESN, MultiringESN
-from torch_rc.nn.readout import Linear
+from .esn import ESNBase, LeakyESN, MultiringESN
+from .readout import Linear
+
+__all__ = ['ESNBase', 'LeakyESN', 'MultiringESN', 'Linear']

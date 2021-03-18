@@ -18,5 +18,6 @@ class TestGRU(unittest.TestCase):
         esn = torch.jit.script(MultiringESN(1, 10, num_layers=3))
         esn.forward(torch.rand(15, 8, 1))
 
+
 if __name__ == '__main__':
     unittest.main()

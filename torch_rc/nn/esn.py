@@ -1,8 +1,6 @@
 import torch
-import torch.nn as nn
 from torch.nn import ModuleList
-import torch.nn.functional as F
-from typing import Optional, Sequence, Final
+from typing import Optional, Final
 
 
 @torch.jit.script
@@ -306,7 +304,8 @@ class ESNBase(torch.nn.Module):
 #         :param input: (seq_len, batch, input_size)
 #         :param h_0: (num_layers * num_directions, batch, hidden_size)
 #         :return: h_n, which is a tensor of shape (num_directions, batch, hidden_size). It is compatible with the
-#                  output tensor h_n from the forward method, which has shape (num_layers * num_directions, batch, hidden_size).
+#                  output tensor h_n from the forward method, which has shape
+#                  (num_layers * num_directions, batch, hidden_size).
 #                  It contains the hidden state for the last step of the sequence.
 #         """
 #         batch = input.size(1)
