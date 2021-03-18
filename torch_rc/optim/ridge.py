@@ -31,7 +31,8 @@ def _incremental_ridge_classifier_step(input, expected, mat_a, mat_b, classifica
 
 @torch.jit.script
 def _incremental_ridge_end(mat_a, mat_b, l2_reg: float, ide):
-    weights = torch.solve(mat_a.t(), mat_b + l2_reg * ide)[0].t()  # (ny, nr+1)
+    # Compute A @ (B + l2_reg * I)^{-1}
+    weights = torch.linalg.solve(mat_b + l2_reg * ide, mat_a.t()).t()  # (ny, nr+1)
     w, b = weights[:, :-1], weights[:, -1]
     return w, b
 
@@ -69,7 +70,8 @@ def _direct_ridge(input_size: int, output_size: int, input, expected, l2_reg: fl
     mat_a = torch.einsum('br,by->yr', s, y)
     mat_b = torch.einsum('br,bz->rz', s, s)
 
-    weights = torch.solve(mat_a.t(), mat_b + l2_reg * ide)[0].t()  # (ny, nr+1)
+    # Compute A @ (B + l2_reg * I)^{-1}
+    weights = torch.linalg.solve(mat_b + l2_reg * ide, mat_a.t()).t()  # (ny, nr+1)
     w, b = weights[:, :-1], weights[:, -1]
     return w, b
 
