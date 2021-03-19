@@ -12,7 +12,7 @@ def _incremental_ridge_init(input_size: int, output_size: int, device: torch.dev
 
 
 @torch.jit.script
-def _incremental_ridge_classifier_step(input, expected, mat_a, mat_b, classification: bool):
+def _incremental_ridge_step(input, expected, mat_a, mat_b, classification: bool):
     # Add bias
     s = torch.cat([input, torch.ones(input.shape[0], 1, device=input.device, dtype=input.dtype)], dim=1)
 
@@ -70,10 +70,7 @@ def _direct_ridge(input_size: int, output_size: int, input, expected, l2_reg: fl
     mat_a = torch.einsum('br,by->yr', s, y)
     mat_b = torch.einsum('br,bz->rz', s, s)
 
-    # Compute A @ (B + l2_reg * I)^{-1}
-    weights = torch.linalg.solve(mat_b + l2_reg * ide, mat_a.t()).t()  # (ny, nr+1)
-    w, b = weights[:, :-1], weights[:, -1]
-    return w, b
+    return _incremental_ridge_end(mat_a, mat_b, l2_reg, ide)
 
 
 class _RidgeBase:
@@ -83,11 +80,25 @@ class _RidgeBase:
         self._l2_reg = l2_reg
         self._classification = classification
 
-        self._state_size = self._readout.weight.shape[1]
+        self._input_size = self._readout.weight.shape[1]
         self._output_size = self._readout.weight.shape[0]
 
-    def fit(self, states, expected):
-        w, b = _direct_ridge(self._state_size, self._output_size, states, expected, self._l2_reg, self._classification)
+    def fit(self, input, expected):
+        """
+
+        Args:
+            input: input tensor of shape (batch, n_features)
+            expected: target tensor of shape:
+                - (batch, n_targets) in case of regression
+                - (batch,) in case of classification, with dtype=torch.Long
+
+        """
+        if self._classification:
+            assert len(input.shape) == len(expected.shape) + 1, "Multi-target classification is not supported"
+        else:
+            assert len(input.shape) == len(expected.shape)
+
+        w, b = _direct_ridge(self._input_size, self._output_size, input, expected, self._l2_reg, self._classification)
         self._apply_weights(w, b)
 
     def _apply_weights(self, w, b):
@@ -104,26 +115,29 @@ class _RidgeIncrementalBase:
         self._l2_reg = l2_reg
         self._classification = classification
 
-        self._state_size = self._readout.weight.shape[1]
+        self._input_size = self._readout.weight.shape[1]
         self._output_size = self._readout.weight.shape[0]
 
         device = self._readout.weight.device
 
-        self._mat_a, self._mat_b, self._ide = _incremental_ridge_init(self._state_size, self._output_size, device)
+        self._mat_a, self._mat_b, self._ide = _incremental_ridge_init(self._input_size, self._output_size, device)
 
-    def fit_step(self, states, expected):
+    def fit_step(self, input, expected):
         """
 
         Args:
-            states: tensor of shape (batch, state_size) containing the states computed by the ESN
-            expected: tensor of shape (batch,) containing the target classes
-
-        Returns:
+            input: input tensor of shape (batch, n_features)
+            expected: target tensor of shape:
+                - (batch, n_targets) in case of regression
+                - (batch,) in case of classification, with dtype=torch.Long
 
         """
+        if self._classification:
+            assert len(input.shape) == len(expected.shape) + 1, "Multi-target classification is not supported"
+        else:
+            assert len(input.shape) == len(expected.shape)
 
-        mat_a, mat_b = _incremental_ridge_classifier_step(states, expected, self._mat_a, self._mat_b,
-                                                          self._classification)
+        mat_a, mat_b = _incremental_ridge_step(input, expected, self._mat_a, self._mat_b, self._classification)
         self._mat_a = mat_a
         self._mat_b = mat_b
 

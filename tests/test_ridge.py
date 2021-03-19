@@ -92,5 +92,6 @@ class TestRidge(unittest.TestCase):
         self.assertTrue(torch.abs(layer(torch.as_tensor([[0.8, 0.9, 1.0, 1.1]])) - 1.39) < 1e-4)
         self.assertTrue(torch.abs(layer(torch.as_tensor([[0.5, -0.3, 0.0, 0.5]])) - 0.5) < 1e-4)
 
+
 if __name__ == '__main__':
     unittest.main()
