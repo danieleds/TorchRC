@@ -154,23 +154,23 @@ class _RidgeIncrementalBase:
 
 class RidgeClassification(_RidgeBase):
 
-    def __init__(self, readout: Linear, l2_reg: float = 0):
+    def __init__(self, readout: Linear, l2_reg: float = 1):
         super().__init__(readout, l2_reg, True)
 
 
 class RidgeRegression(_RidgeBase):
 
-    def __init__(self, readout: Linear, l2_reg: float = 0):
+    def __init__(self, readout: Linear, l2_reg: float = 1):
         super().__init__(readout, l2_reg, False)
 
 
 class RidgeIncrementalClassification(_RidgeIncrementalBase):
 
-    def __init__(self, readout: Linear, l2_reg: float = 0):
+    def __init__(self, readout: Linear, l2_reg: float = 1):
         super().__init__(readout, l2_reg, True)
 
 
 class RidgeIncrementalRegression(_RidgeIncrementalBase):
 
-    def __init__(self, readout: Linear, l2_reg: float = 0):
+    def __init__(self, readout: Linear, l2_reg: float = 1):
         super().__init__(readout, l2_reg, False)
