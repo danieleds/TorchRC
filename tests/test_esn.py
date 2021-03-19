@@ -4,7 +4,7 @@ import torch
 from torch_rc.nn.esn import ESNCell, LeakyESN, MultiringESN
 
 
-class TestGRU(unittest.TestCase):
+class TestESN(unittest.TestCase):
 
     def test_esn_cell_is_scriptable(self):
         cell = ESNCell(2, 4)

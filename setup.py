@@ -12,7 +12,8 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     install_requires=[
-        "torch",
+        "torch>=1.8",
     ],
+    python_requires='>=3.8',
     packages=['torch_rc'],
 )

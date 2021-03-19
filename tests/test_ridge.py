@@ -5,7 +5,7 @@ from torch_rc.nn import Linear
 from torch_rc.optim import RidgeClassification, RidgeIncrementalClassification
 
 
-class TestGRU(unittest.TestCase):
+class TestRidge(unittest.TestCase):
 
     def test_ridge_classification(self):
         x = torch.as_tensor([
