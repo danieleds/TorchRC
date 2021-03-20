@@ -23,7 +23,7 @@ for reservoir_size in [4, 8, 16, 32, 64]:
         readout = torch_rc.nn.Linear(reservoir_size, 1)
 
         # Train the model (here we do it in full batch)
-        optimizer = torch_rc.optim.RidgeRegression(readout, l2_reg=1e-2)
+        optimizer = torch_rc.optim.RidgeRegression(readout.parameters(), l2_reg=1e-2)
         n_washout = 20
         h, _ = esn(train_x.unsqueeze(1))
         optimizer.fit(h[n_washout:, 0, :], train_y[n_washout:])

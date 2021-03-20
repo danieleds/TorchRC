@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional
-from torch_rc.nn.readout import Linear
+from typing import Iterable
 
 
 @torch.jit.script
@@ -73,15 +73,43 @@ def _direct_ridge(input_size: int, output_size: int, input, expected, l2_reg: fl
     return _incremental_ridge_end(mat_a, mat_b, l2_reg, ide)
 
 
+def _detect_parameters(params: Iterable):
+    if isinstance(params, torch.Tensor):
+        raise TypeError("params argument given to the optimizer should be "
+                        "an iterable of Tensors, but got " +
+                        torch.typename(params))
+
+    plist = list(params)
+    if len(plist) == 0:
+        raise ValueError("optimizer got an empty parameter list")
+
+    if len(plist) != 2:
+        raise ValueError(f"optimizer expected a list of 2 parameters, but got {len(plist)}")
+
+    # Find which one is the weight and which one is the bias
+    if len(plist[0].shape) > len(plist[1].shape):
+        w, b = plist[0], plist[1]
+    else:
+        w, b = plist[1], plist[0]
+
+    if w.shape[0] != b.shape[0]:
+        raise ValueError(f"the first dimension of the tensors should match, but got {tuple(w.shape[0])} "
+                         f"and {tuple(b.shape[0])}")
+
+    return w, b
+
+
 class _RidgeBase:
 
-    def __init__(self, readout: Linear, l2_reg: float, classification: bool):
-        self._readout = readout
+    def __init__(self, params: Iterable, l2_reg: float, classification: bool):
         self._l2_reg = l2_reg
         self._classification = classification
 
-        self._input_size = self._readout.weight.shape[1]
-        self._output_size = self._readout.weight.shape[0]
+        w, b = _detect_parameters(params)
+        self._params = {'w': w, 'b': b}
+
+        self._input_size = w.shape[1]
+        self._output_size = w.shape[0]
 
     def fit(self, input, expected):
         """
@@ -102,23 +130,25 @@ class _RidgeBase:
         self._apply_weights(w, b)
 
     def _apply_weights(self, w, b):
-        assert self._readout.weight.shape == w.shape
-        assert self._readout.bias.shape == b.shape
-        self._readout.weight.data = w
-        self._readout.bias.data = b
+        assert self._params['w'].shape == w.shape
+        assert self._params['b'].shape == b.shape
+        self._params['w'].data = w
+        self._params['b'].data = b
 
 
 class _RidgeIncrementalBase:
 
-    def __init__(self, readout: Linear, l2_reg: float, classification: bool):
-        self._readout = readout
+    def __init__(self, params: Iterable, l2_reg: float, classification: bool):
         self._l2_reg = l2_reg
         self._classification = classification
 
-        self._input_size = self._readout.weight.shape[1]
-        self._output_size = self._readout.weight.shape[0]
+        w, b = _detect_parameters(params)
+        self._params = {'w': w, 'b': b}
 
-        device = self._readout.weight.device
+        self._input_size = w.shape[1]
+        self._output_size = w.shape[0]
+
+        device = w.device
 
         self._mat_a, self._mat_b, self._ide = _incremental_ridge_init(self._input_size, self._output_size, device)
 
@@ -146,31 +176,31 @@ class _RidgeIncrementalBase:
         self._apply_weights(w, b)
 
     def _apply_weights(self, w, b):
-        assert self._readout.weight.shape == w.shape
-        assert self._readout.bias.shape == b.shape
-        self._readout.weight.data = w
-        self._readout.bias.data = b
+        assert self._params['w'].shape == w.shape
+        assert self._params['b'].shape == b.shape
+        self._params['w'].data = w
+        self._params['b'].data = b
 
 
 class RidgeClassification(_RidgeBase):
 
-    def __init__(self, readout: Linear, l2_reg: float = 1):
-        super().__init__(readout, l2_reg, True)
+    def __init__(self, params: Iterable, l2_reg: float = 1):
+        super().__init__(params, l2_reg, True)
 
 
 class RidgeRegression(_RidgeBase):
 
-    def __init__(self, readout: Linear, l2_reg: float = 1):
-        super().__init__(readout, l2_reg, False)
+    def __init__(self, params: Iterable, l2_reg: float = 1):
+        super().__init__(params, l2_reg, False)
 
 
 class RidgeIncrementalClassification(_RidgeIncrementalBase):
 
-    def __init__(self, readout: Linear, l2_reg: float = 1):
-        super().__init__(readout, l2_reg, True)
+    def __init__(self, params: Iterable, l2_reg: float = 1):
+        super().__init__(params, l2_reg, True)
 
 
 class RidgeIncrementalRegression(_RidgeIncrementalBase):
 
-    def __init__(self, readout: Linear, l2_reg: float = 1):
-        super().__init__(readout, l2_reg, False)
+    def __init__(self, params: Iterable, l2_reg: float = 1):
+        super().__init__(params, l2_reg, False)

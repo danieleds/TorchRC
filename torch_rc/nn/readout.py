@@ -6,7 +6,8 @@ class Linear(torch.nn.Module):
 
     def __init__(self, in_features: int, out_features: int):
         """
-        A linear readout layer that can be used with the torch_rc optimizators.
+        A linear readout layer that can be used with the torch_rc optimizators. This layer is identical
+        to PyTorch's Linear layer, except that this one by default does not require gradients for its parameters.
         :param in_features: number of features in the input
         :param out_features: number of features in the output
         """

@@ -21,7 +21,7 @@ readout = torch_rc.nn.Linear(64, 2)
 
 # Train the model (here we do it in minibatches)
 train_dl = DataLoader(train_ds, batch_size=8)
-optimizer = torch_rc.optim.RidgeIncrementalClassification(readout)
+optimizer = torch_rc.optim.RidgeIncrementalClassification(readout.parameters())
 for x, y in train_dl:
     h, _ = esn(x.transpose(1, 0))
     optimizer.fit_step(h[-1], y)
