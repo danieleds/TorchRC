@@ -30,12 +30,12 @@ Training on the GPU is also supported.
 
 Currently supported optimizers:
 
- * **Ridge Classification** (`torch_rc.optim.RidgeClassification`): for trainin a readout in closed-form for classification problems. 
- * **Ridge Regression** (`torch_rc.optim.RidgeRegression`): for trainin a readout in closed-form for regression problems. 
+ * **Ridge Classification** (`torch_rc.optim.RidgeClassification`): for training a readout in closed-form for classification problems.
+ * **Ridge Regression** (`torch_rc.optim.RidgeRegression`): for training a readout in closed-form for regression problems.
  * **Ridge Incremental Classification** (`torch_rc.optim.RidgeIncrementalClassification`): for training a readout in closed-form for classification problems,
-   passing data in multiple separate calls (e.g., for when your collection of states do not fit in memory).
+   passing data in multiple separate calls (e.g., for when your collection of states does not fit in memory).
  * **Ridge Incremental Regression** (`torch_rc.optim.RidgeIncrementalRegression`): for training a readout in closed-form for regression problems,
-   passing data in multiple separate calls (e.g., for when your collection of states do not fit in memory).
+   passing data in multiple separate calls (e.g., for when your collection of states does not fit in memory).
 
 ## Installation
 
