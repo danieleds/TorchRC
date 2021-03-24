@@ -17,8 +17,8 @@ An organized collection of Reservoir Computing models and techniques that is wel
 
 At the moment, the library contains an implementation of:
 
- * **(Leaky/Deep) Echo State Network** (`torch_rc.nn.LeakyESN`)
- * **(Leaky/Deep) Echo State Network with Ring or Multiring Reservoir** (`torch_rc.nn.MultiringESN`)
+ * (Leaky/Deep/Bidirectional) **Echo State Network** (`torch_rc.nn.LeakyESN`)
+ * (Leaky/Deep/Bidirectional) **Echo State Network with Ring or Multiring Reservoir** (`torch_rc.nn.MultiringESN`)
 
 More models are coming.
 
