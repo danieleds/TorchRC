@@ -112,7 +112,7 @@ class _RidgeBase:
         self._output_size = w.shape[0]
 
     def fit(self, input, expected):
-        """
+        """Updates the parameters with the solution of the optimization problem.
 
         Args:
             input: input tensor of shape (batch, n_features)
@@ -185,22 +185,130 @@ class _RidgeIncrementalBase:
 class RidgeClassification(_RidgeBase):
 
     def __init__(self, params: Iterable, l2_reg: float = 1):
+        """Implements a Ridge classification algorithm.
+
+        This classifier first converts the target values into ``{-1, 1}`` and
+        then treats the problem as a regression task.
+
+        Args:
+            params: iterable of parameters to optimize. Since this algorithm can only be used to
+                train linear layers, the number of parameters should be exactly 2 (one for the weights
+                and one for the biases).
+            l2_reg: regularization strength. Must be a positive floating point number.
+        """
         super().__init__(params, l2_reg, True)
+
+    def fit(self, input, expected):
+        """Updates the parameters with the solution of the optimization problem.
+
+        Args:
+            input: input tensor of shape `(batch, n_features)`
+            expected: target tensor of shape `(batch,)` and of type ``torch.long``
+
+        """
+        super().fit(input, expected)
 
 
 class RidgeRegression(_RidgeBase):
 
     def __init__(self, params: Iterable, l2_reg: float = 1):
+        """Implements a Ridge regression algorithm.
+
+        Args:
+            params: iterable of parameters to optimize. Since this algorithm can only be used to
+                train linear layers, the number of parameters should be exactly 2 (one for the weights
+                and one for the biases).
+            l2_reg: regularization strength. Must be a positive floating point number.
+        """
         super().__init__(params, l2_reg, False)
+
+    def fit(self, input, expected):
+        """Updates the parameters with the solution of the optimization problem.
+
+        Args:
+            input: input tensor of shape `(batch, n_features)`
+            expected: target tensor of shape `(batch, n_targets)`
+
+        """
+        super().fit(input, expected)
 
 
 class RidgeIncrementalClassification(_RidgeIncrementalBase):
 
     def __init__(self, params: Iterable, l2_reg: float = 1):
+        """Implements an incremental Ridge classification algorithm.
+
+        This classifier first converts the target values into ``{-1, 1}`` and
+        then treats the problem as a regression task.
+
+        The input examples and target values can be provided in batches so that
+        it is not needed to hold the whole dataset in memory all at the same time.
+
+        Args:
+            params: iterable of parameters to optimize. Since this algorithm can only be used to
+                train linear layers, the number of parameters should be exactly 2 (one for the weights
+                and one for the biases).
+            l2_reg: regularization strength. Must be a positive floating point number.
+        """
         super().__init__(params, l2_reg, True)
+
+    def fit_step(self, input, expected):
+        """Provides to the optimizer pairs of inputs and expected outputs.
+
+        Note:
+            Calling this method *does not* update the parameters of your model. Instead,
+            it is updated only an internal state of the optimizer. Whenever you want to update
+            the parameters of the model, call the :func:`fit_apply` method.
+            In general, you will call :func:`fit_step` multiple times before finally calling :func:`fit_apply`.
+
+        Args:
+            input: input tensor of shape `(batch, n_features)`
+            expected: target tensor of shape `(batch,)` and of type ``torch.long``
+
+        """
+        super().fit_step(input, expected)
+
+    def fit_apply(self):
+        """Updates the parameters with the solution of the optimization problem.
+
+        """
+        super().fit_apply()
 
 
 class RidgeIncrementalRegression(_RidgeIncrementalBase):
 
     def __init__(self, params: Iterable, l2_reg: float = 1):
+        """Implements an incremental Ridge regression algorithm.
+
+        The input examples and target values can be provided in batches so that
+        it is not needed to hold the whole dataset in memory all at the same time.
+
+        Args:
+            params: iterable of parameters to optimize. Since this algorithm can only be used to
+                train linear layers, the number of parameters should be exactly 2 (one for the weights
+                and one for the biases).
+            l2_reg: regularization strength. Must be a positive floating point number.
+        """
         super().__init__(params, l2_reg, False)
+
+    def fit_step(self, input, expected):
+        """Provides to the optimizer pairs of inputs and expected outputs.
+
+        Note:
+            Calling this method *does not* update the parameters of your model. Instead,
+            it is updated only an internal state of the optimizer. Whenever you want to update
+            the parameters of the model, call the :func:`fit_apply` method.
+            In general, you will call :func:`fit_step` multiple times before finally calling :func:`fit_apply`.
+
+        Args:
+            input: input tensor of shape `(batch, n_features)`
+            expected: target tensor of shape `(batch, n_targets)`
+
+        """
+        super().fit_step(input, expected)
+
+    def fit_apply(self):
+        """Updates the parameters with the solution of the optimization problem.
+
+        """
+        super().fit_apply()

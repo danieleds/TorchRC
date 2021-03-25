@@ -9,7 +9,6 @@ Linear Optimizers
 .. autosummary::
     :toctree: generated
     :nosignatures:
-    :template: classtemplate.rst
 
     torch_rc.optim.RidgeClassification
     torch_rc.optim.RidgeIncrementalClassification
