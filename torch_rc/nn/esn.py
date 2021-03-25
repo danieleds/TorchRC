@@ -192,13 +192,32 @@ class ESNBase(torch.nn.Module):
         self._cells_bw = cells_bw
 
     def forward(self, input, h_0: Optional[torch.Tensor] = None):
-        """
-        input: (seq_len, batch, input_size)
-        h_0: (num_layers * num_directions, batch, hidden_size)
+        r"""Forwards the given sequence through the network.
 
-        output: (seq_len, batch, num_directions * hidden_size)  # Only the output of the last layer, for both directions
-                                                                  concatenated
-        h_n: (num_layers * num_directions, batch, hidden_size)  # Hidden state for the last step, in all layers
+        Args:
+            input: tensor of shape `(seq_len, batch, input_size)`: tensor containing the features
+              of the input sequence.
+            h_0: tensor of shape `(num_layers * num_directions, batch, hidden_size)`: tensor
+              containing the initial hidden state for each element in the batch.
+              Defaults to zero if not provided. If the ESN is bidirectional,
+              num_directions should be 2, else it should be 1.
+
+        Returns:
+            output, h_n
+
+            - **output** of shape `(seq_len, batch, num_directions * hidden_size)`: tensor
+              containing the output features (`h_t`) from the last layer of the RNN,
+              for each `t`.
+
+              The directions can be separated
+              using ``output.view(seq_len, batch, num_directions, hidden_size)``,
+              with forward and backward being direction `0` and `1` respectively.
+            - **h_n** of shape `(num_layers * num_directions, batch, hidden_size)`: tensor
+              containing the hidden state for `t = seq_len`.
+
+              Like *output*, the layers can be separated using
+              ``h_n.view(num_layers, num_directions, batch, hidden_size)``.
+
         """
 
         if self.bidirectional:
@@ -277,6 +296,40 @@ class LeakyESN(ESNBase):
     def __init__(self, input_size: int, output_size: int, num_layers=1, bias=True, bidirectional=False,
                  scale_rec=0.9, density=1.0, scale_in=1.0, density_in=1.0,
                  scale_bias=1.0, leaking_rate=1.0, rescaling_method='specrad'):
+        r"""A multi-layer Leaky Echo State Network.
+
+        Args:
+            input_size: The number of expected features in the input `x`
+            output_size: The number of features in the hidden state `h`
+            num_layers: Number of recurrent layers. E.g., setting ``num_layers=2``
+                would mean stacking two ESNs together to form a `stacked ESN`,
+                with the second ESN taking in outputs of the first ESN and
+                computing the final results. Default: 1
+            bias: If ``False``, then the layer does not use bias weights. Default: ``True``
+            bidirectional: If ``True``, becomes a bidirectional ESN. Default: ``False``
+            scale_rec: Scaling of the recurrent connection matrix. The actual rescaling value depends
+                on the ``rescaling_method`` parameter.
+            density: Density of the recurrent connection matrix. Default: 1.0
+            scale_in: Scaling of the input connetions. Default: 1.0
+            density_in: Density of the input connetion matrix. Default: 1.0
+            scale_bias: Scaling of the bias values. Default: 1.0
+            leaking_rate: Leaking rate. Default: 1.0
+            rescaling_method: The method for rescaling the recurrent matrix. It can be either ``'norm'`` or
+                ``'specrad'``. If ``'norm'``, then :math:`\left\|W\right\|_2 = \text{scale_rec}`.
+                ``'specrad'``, then :math:`\rho(W) = \text{scale_rec}`. Default: ``'specrad'``
+
+        Shape:
+            Input1: :math:`(L, N, H_{in})` tensor containing input features where
+                :math:`H_{in}=\text{input\_size}` and `L` represents a sequence length.
+            Input2: :math:`(S, N, H_{out})` tensor
+                containing the initial hidden state for each element in the batch.
+                :math:`H_{out}=\text{hidden\_size}`
+                Defaults to zero if not provided. where :math:`S=\text{num\_layers} * \text{num\_directions}`
+                If the ESN is bidirectional, num_directions should be 2, else it should be 1.
+            Output1: :math:`(L, N, H_{all})` where :math:`H_{all}=\text{num\_directions} * \text{hidden\_size}`
+            Output2: :math:`(S, N, H_{out})` tensor containing the next hidden state
+                for each element in the batch
+        """
 
         num_directions = 2 if bidirectional else 1
 
@@ -303,6 +356,40 @@ class MultiringESN(ESNBase):
     def __init__(self, input_size: int, output_size: int, num_layers=1, bias=True, bidirectional=False,
                  scale_rec=1.0, scale_in=1.0, density_in=1.0,
                  scale_bias=1.0, leaking_rate=1.0, topology='multiring'):
+        r"""A multi-layer Multiring Echo State Network.
+
+        Args:
+            input_size: The number of expected features in the input `x`
+            output_size: The number of features in the hidden state `h`
+            num_layers: Number of recurrent layers. E.g., setting ``num_layers=2``
+                would mean stacking two ESNs together to form a `stacked ESN`,
+                with the second ESN taking in outputs of the first ESN and
+                computing the final results. Default: 1
+            bias: If ``False``, then the layer does not use bias weights. Default: ``True``
+            bidirectional: If ``True``, becomes a bidirectional ESN. Default: ``False``
+            scale_rec: Scaling of the recurrent connections. The spectral radius of the implicit
+                recurrent matrices is equal to this parameter, i.e., :math:`\rho(W)=\text{scale_rec}`.
+                Default: 1.0.
+            scale_in: Scaling of the input connetions. Default: 1.0
+            density_in: Density of the input connetion matrix. Default: 1.0
+            scale_bias: Scaling of the bias values. Default: 1.0
+            leaking_rate: Leaking rate. Default: 1.0
+            topology: The topology of the reservoir. It can be either ``'ring'`` or ``'multiring'``, where
+                `ring` corresponds to a shift operator on the state and `multiring` to a permutation of the
+                state. Default: ``'multiring'``
+
+        Shape:
+            Input1: :math:`(L, N, H_{in})` tensor containing input features where
+                :math:`H_{in}=\text{input\_size}` and `L` represents a sequence length.
+            Input2: :math:`(S, N, H_{out})` tensor
+                containing the initial hidden state for each element in the batch.
+                :math:`H_{out}=\text{hidden\_size}`
+                Defaults to zero if not provided. where :math:`S=\text{num\_layers} * \text{num\_directions}`
+                If the ESN is bidirectional, num_directions should be 2, else it should be 1.
+            Output1: :math:`(L, N, H_{all})` where :math:`H_{all}=\text{num\_directions} * \text{hidden\_size}`
+            Output2: :math:`(S, N, H_{out})` tensor containing the next hidden state
+                for each element in the batch
+        """
 
         num_directions = 2 if bidirectional else 1
 

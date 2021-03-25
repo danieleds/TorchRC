@@ -34,5 +34,6 @@ class TestESN(unittest.TestCase):
         self.assertEqual(tuple(out.shape), (15, 8, 2 * 10))
         self.assertEqual(tuple(h.shape), (3 * 2, 8, 10))
 
+
 if __name__ == '__main__':
     unittest.main()
