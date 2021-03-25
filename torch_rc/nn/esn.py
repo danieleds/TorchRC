@@ -316,7 +316,7 @@ class LeakyESN(ESNBase):
             leaking_rate: Leaking rate. Default: 1.0
             rescaling_method: The method for rescaling the recurrent matrix. It can be either ``'norm'`` or
                 ``'specrad'``. If ``'norm'``, then :math:`\left\|W\right\|_2 = \text{scale_rec}`.
-                ``'specrad'``, then :math:`\rho(W) = \text{scale_rec}`. Default: ``'specrad'``
+                If ``'specrad'``, then :math:`\rho(W) = \text{scale_rec}`. Default: ``'specrad'``
 
         Shape:
             Input1: :math:`(L, N, H_{in})` tensor containing input features where
