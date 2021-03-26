@@ -69,3 +69,19 @@ html_static_path = ['_static']
 # import pytorch_sphinx_theme
 # html_theme = 'pytorch_sphinx_theme'
 # html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
+
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+        'donate.html',
+    ]
+}
+
+html_theme_options = {
+    'extra_nav_links': {
+        'GitHub': 'https://github.com/danieleds/TorchRC',
+    }
+}
