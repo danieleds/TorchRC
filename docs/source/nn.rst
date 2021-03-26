@@ -3,6 +3,8 @@ torch_rc.nn
 
 .. currentmodule:: torch_rc.nn
 
+Collection of composable Reservoir Computing models.
+
 Reservoir Layers
 ----------------
 

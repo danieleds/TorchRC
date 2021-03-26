@@ -13,6 +13,13 @@ Welcome to TorchRC's documentation!
    nn
    optim
 
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: Notes
+
+   notes/*
+
 
 Indices and tables
 ==================
